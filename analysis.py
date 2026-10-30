@@ -1,122 +1,199 @@
-
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
+
 
 PROJECT_DIR = Path(__file__).resolve().parent
 CSV_PATH = PROJECT_DIR / "data" / "spendings.csv"
 CHARTS_DIR = PROJECT_DIR / "charts"
 
-CHARTS_DIR.mkdir(exist_ok=True)
-
-# Load and prepare data
-df = pd.read_csv(CSV_PATH)
-df["date"] = pd.to_datetime(df["date"])
-df["amount"] = pd.to_numeric(df["amount"])
-
-print("====== SPENDING TRACKER ANALYSIS ======")
-
-# General statistics
-print(f"\nNumber of purchases: {len(df)}")
-print(f"Total spending: €{df['amount'].sum():.2f}")
-print(f"Average purchase: €{df['amount'].mean():.2f}")
-print(f"Most expensive purchase: €{df['amount'].max():.2f}")
-
-# Spending by shop
-shop_spending = df.groupby("shop")["amount"].sum()
-shop_spending = shop_spending.sort_values(ascending=False)
-
-print("\n--- SPENDING BY SHOP ---")
-print(shop_spending.round(2))
-
-# Spending by category
-category_spending = df.groupby("category")["amount"].sum()
-category_spending = category_spending.sort_values(ascending=False)
-
-print("\n--- SPENDING BY CATEGORY ---")
-print(category_spending.round(2))
-
-# Needs vs Wants
-need_want_spending = df.groupby("need_want")["amount"].sum()
-
-print("\n--- NEEDS VS WANTS ---")
-print(need_want_spending.round(2))
-
-# Spending by payment method
-payment_spending = df.groupby("payment_method")["amount"].sum()
-
-print("\n--- PAYMENT METHODS ---")
-print(payment_spending.round(2))
-
-# Spending by date
-daily_spending = df.groupby("date")["amount"].sum()
-
-print("\n--- DAILY SPENDING ---")
-print(daily_spending.round(2))
-
-# Top 10 most expensive individual purchases
-top_purchases = df.nlargest(10, "amount")
-
-print("\n--- TOP 10 MOST EXPENSIVE PURCHASES ---")
-print(top_purchases[["date", "item", "shop", "amount"]].to_string(index=False))
+REQUIRED_COLUMNS = [
+    "date",
+    "category",
+    "item",
+    "amount",
+    "shop",
+    "need_want",
+    "payment_method",
+]
 
 
-# Chart 1: Spending by shop
-plt.figure(figsize=(9, 5))
-shop_spending.plot(kind="bar")
-plt.title("Total Spending by Shop")
-plt.xlabel("Shop")
-plt.ylabel("Amount (€)")
-plt.xticks(rotation=0)
-plt.tight_layout()
-plt.savefig(CHARTS_DIR / "spending_by_shop.png")
-plt.show()
-plt.close()
+def load_data():
+    if not CSV_PATH.exists():
+        raise FileNotFoundError(f"CSV file not found: {CSV_PATH}")
 
-# Chart 2: Spending by category
-plt.figure(figsize=(9, 5))
-category_spending.plot(kind="bar")
-plt.title("Total Spending by Category")
-plt.xlabel("Category")
-plt.ylabel("Amount (€)")
-plt.xticks(rotation=30, ha="right")
-plt.tight_layout()
-plt.savefig(CHARTS_DIR / "spending_by_category.png")
-plt.show()
-plt.close()
+    df = pd.read_csv(CSV_PATH)
 
-# Chart 3: Needs vs Wants
-plt.figure(figsize=(7, 7))
-need_want_spending.plot(kind="pie", autopct="%1.1f%%")
-plt.title("Needs vs Wants")
-plt.ylabel("")
-plt.tight_layout()
-plt.savefig(CHARTS_DIR / "needs_vs_wants.png")
-plt.show()
-plt.close()
+    missing_columns = [column for column in REQUIRED_COLUMNS if column not in df.columns]
+    if missing_columns:
+        raise ValueError(f"Missing CSV columns: {', '.join(missing_columns)}")
 
-# Chart 4: Daily spending
-plt.figure(figsize=(10, 5))
-daily_spending.plot(kind="line", marker="o")
-plt.title("Daily Spending")
-plt.xlabel("Date")
-plt.ylabel("Amount (€)")
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.savefig(CHARTS_DIR / "daily_spending.png")
-plt.show()
-plt.close()
+    df = df[REQUIRED_COLUMNS].copy()
 
-# Chart 5: Spending by payment method
-plt.figure(figsize=(8, 5))
-payment_spending.plot(kind="bar")
-plt.title("Spending by Payment Method")
-plt.xlabel("Payment Method")
-plt.ylabel("Amount (€)")
-plt.xticks(rotation=0)
-plt.tight_layout()
-plt.savefig(CHARTS_DIR / "payment_methods.png")
-plt.show()
-plt.close()
+    text_columns = ["category", "item", "shop", "need_want", "payment_method"]
+    for column in text_columns:
+        df[column] = (
+            df[column]
+            .astype("string")
+            .str.strip()
+            .str.replace(r"\\s+", " ", regex=True)
+        )
 
-print("\nCharts saved in the charts folder.")
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d", errors="coerce")
+    df["amount"] = pd.to_numeric(df["amount"], errors="coerce")
+
+    invalid_rows = (
+        df[REQUIRED_COLUMNS].isna().any(axis=1)
+        | (df["amount"] <= 0)
+        | (df["category"] == "")
+        | (df["item"] == "")
+        | (df["shop"] == "")
+        | (~df["need_want"].isin(["Need", "Want"]))
+        | (~df["payment_method"].isin(["Cash", "Revolut", "PTSB"]))
+    )
+
+    if invalid_rows.any():
+        print(f"Warning: {invalid_rows.sum()} invalid row(s) were excluded.")
+
+    df = df.loc[~invalid_rows].copy()
+
+    if df.empty:
+        raise ValueError("The CSV contains no valid purchase records.")
+
+    shop_names = {
+        "ikea": "IKEA",
+        "amazon": "Amazon",
+        "woodies": "Woodies",
+        "zara": "Zara",
+        "lidl": "Lidl",
+        "aldi": "Aldi",
+        "tesco": "Tesco",
+        "supervalu": "SuperValu",
+        "gino's": "Gino's",
+    }
+
+    df["shop"] = df["shop"].apply(
+        lambda shop: shop_names.get(shop.casefold(), shop)
+    )
+
+    return df
+
+
+def print_analysis(df):
+    print("\n====== SPENDING TRACKER ANALYSIS ======")
+
+    print("\n--- GENERAL STATISTICS ---")
+    print(f"Number of purchases: {len(df)}")
+    print(f"Total spending: €{df['amount'].sum():.2f}")
+    print(f"Average purchase: €{df['amount'].mean():.2f}")
+    print(f"Most expensive purchase: €{df['amount'].max():.2f}")
+    print(f"Cheapest purchase: €{df['amount'].min():.2f}")
+    print(f"First date: {df['date'].min().date()}")
+    print(f"Last date: {df['date'].max().date()}")
+
+    print("\n--- SPENDING BY SHOP ---")
+    shop_spending = df.groupby("shop")["amount"].agg(["sum", "count"])
+    shop_spending = shop_spending.sort_values("sum", ascending=False)
+    for shop, row in shop_spending.iterrows():
+        print(f"{shop}: €{row['sum']:.2f} ({int(row['count'])} purchases)")
+
+    print("\n--- SPENDING BY CATEGORY ---")
+    category_spending = df.groupby("category")["amount"].sum().sort_values(ascending=False)
+    for category, total in category_spending.items():
+        print(f"{category}: €{total:.2f}")
+
+    print("\n--- NEEDS VS WANTS ---")
+    needs_wants = df.groupby("need_want")["amount"].agg(["sum", "count"])
+    needs_wants = needs_wants.sort_values("sum", ascending=False)
+    for classification, row in needs_wants.iterrows():
+        print(f"{classification}: €{row['sum']:.2f} ({int(row['count'])} purchases)")
+
+    print("\n--- SPENDING BY PAYMENT METHOD ---")
+    payment_spending = df.groupby("payment_method")["amount"].agg(["sum", "count"])
+    payment_spending = payment_spending.sort_values("sum", ascending=False)
+    for method, row in payment_spending.iterrows():
+        print(f"{method}: €{row['sum']:.2f} ({int(row['count'])} purchases)")
+
+    print("\n--- DAILY SPENDING ---")
+    daily_spending = df.groupby(df["date"].dt.date)["amount"].sum().sort_index()
+    for purchase_date, total in daily_spending.items():
+        print(f"{purchase_date}: €{total:.2f}")
+
+    print("\n--- TOP 10 MOST EXPENSIVE PURCHASES ---")
+    top_purchases = df.nlargest(10, "amount")
+    print(
+        top_purchases[["date", "item", "shop", "amount"]]
+        .to_string(index=False, formatters={"amount": lambda value: f"€{value:.2f}"})
+    )
+
+
+def save_charts(df):
+    CHARTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    shop_spending = df.groupby("shop")["amount"].sum().sort_values(ascending=False)
+    plt.figure(figsize=(10, 6))
+    shop_spending.plot(kind="bar")
+    plt.title("Total Spending by Shop")
+    plt.xlabel("Shop")
+    plt.ylabel("Amount (€)")
+    plt.xticks(rotation=35, ha="right")
+    plt.tight_layout()
+    plt.savefig(CHARTS_DIR / "spending_by_shop.png", dpi=150)
+    plt.close()
+
+    category_spending = df.groupby("category")["amount"].sum().sort_values(ascending=False)
+    plt.figure(figsize=(10, 6))
+    category_spending.plot(kind="bar")
+    plt.title("Total Spending by Category")
+    plt.xlabel("Category")
+    plt.ylabel("Amount (€)")
+    plt.xticks(rotation=35, ha="right")
+    plt.tight_layout()
+    plt.savefig(CHARTS_DIR / "spending_by_category.png", dpi=150)
+    plt.close()
+
+    needs_wants = df.groupby("need_want")["amount"].sum()
+    plt.figure(figsize=(7, 7))
+    needs_wants.plot(kind="pie", autopct="%1.1f%%", startangle=90)
+    plt.title("Needs vs Wants")
+    plt.ylabel("")
+    plt.tight_layout()
+    plt.savefig(CHARTS_DIR / "needs_vs_wants.png", dpi=150)
+    plt.close()
+
+    daily_spending = df.groupby(df["date"].dt.date)["amount"].sum().sort_index()
+    plt.figure(figsize=(11, 6))
+    daily_spending.plot(kind="line", marker="o")
+    plt.title("Daily Spending")
+    plt.xlabel("Date")
+    plt.ylabel("Amount (€)")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.savefig(CHARTS_DIR / "daily_spending.png", dpi=150)
+    plt.close()
+
+    payment_spending = df.groupby("payment_method")["amount"].sum().sort_values(ascending=False)
+    plt.figure(figsize=(8, 5))
+    payment_spending.plot(kind="bar")
+    plt.title("Spending by Payment Method")
+    plt.xlabel("Payment Method")
+    plt.ylabel("Amount (€)")
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig(CHARTS_DIR / "payment_methods.png", dpi=150)
+    plt.close()
+
+    print(f"\nCharts saved in: {CHARTS_DIR}")
+
+
+def main():
+    try:
+        df = load_data()
+        print_analysis(df)
+        save_charts(df)
+    except (FileNotFoundError, ValueError, pd.errors.ParserError) as error:
+        print(f"Analysis could not be completed: {error}")
+
+
+if __name__ == "__main__":
+    main()

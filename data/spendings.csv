@@ -1,67 +1,110 @@
 date,category,item,amount,shop,need_want,payment_method
-2026-10-09,Food,Oats 1kg,1.19,Lidl,Need,Revolut
-2026-10-09,Food,Free Range Eggs 10 pack,3.29,Lidl,Need,Revolut
-2026-10-09,Food,Semi-Skimmed Milk 2L,2.19,Lidl,Need,Revolut
-2026-10-09,Food,Bananas 1kg,1.59,Lidl,Need,Revolut
-2026-10-09,Food,Chicken Breast 690g,5.0,Lidl,Need,Revolut
-2026-10-09,Food,Potatoes 2.5kg,3.49,Lidl,Need,Revolut
-2026-10-09,Food,Frozen Mixed Berries 1kg,4.49,Lidl,Need,Revolut
-2026-10-09,Food,Greek Yogurt 0% 1kg,1.85,Lidl,Need,Revolut
-2026-10-09,Food,Konjac Noodles 200g,2.49,Lidl,Want,Revolut
-2026-10-12,Food,Cottage Cheese 300g,1.49,Tesco,Need,PTSB
-2026-10-12,Food,Philadelphia Protein 165g,2.49,Tesco,Want,PTSB
-2026-10-12,Food,Carrots 1kg,1.19,Tesco,Need,PTSB
-2026-10-12,Food,Cucumbers 1 pack,1.29,Tesco,Need,PTSB
-2026-10-12,Food,Tomatoes 500g,1.99,Tesco,Need,PTSB
-2026-10-12,Food,Wholewheat Linguine 500g,1.25,Tesco,Need,PTSB
-2026-10-12,Food,Beef Mince 500g,5.49,Tesco,Need,PTSB
-2026-10-12,Food,Light Cooking Cream 250ml,1.49,Tesco,Want,PTSB
-2026-10-12,Food,Garlic 1 bulb,0.69,Tesco,Need,PTSB
-2026-10-15,Food,Chicken Breast 1kg,7.49,Aldi,Need,Cash
-2026-10-15,Food,White Rice 1kg,1.59,Aldi,Need,Cash
-2026-10-15,Food,Potatoes 2kg,2.49,Aldi,Need,Cash
-2026-10-15,Food,Skimmed Milk 2L,2.15,Aldi,Need,Cash
-2026-10-15,Food,Plain Greek Yogurt 1kg,1.79,Aldi,Need,Cash
-2026-10-15,Food,Frozen Berries 750g,3.49,Aldi,Need,Cash
-2026-10-15,Food,Peas Frozen 900g,1.39,Aldi,Need,Cash
-2026-10-15,Food,Teriyaki Sauce 250ml,1.69,Aldi,Want,Cash
-2026-10-15,Food,Hot Chilli Sauce 200ml,1.49,Aldi,Want,Cash
-2026-10-18,Food,Baby Potatoes 1kg,2.49,SuperValu,Need,Revolut
-2026-10-18,Food,Philadelphia Protein 165g,2.49,SuperValu,Want,Revolut
-2026-10-18,Food,Laughing Cow Light 8 pack,2.75,SuperValu,Want,Revolut
-2026-10-18,Food,Grated Cheese 200g,2.49,SuperValu,Want,Revolut
-2026-10-18,Food,Free Range Eggs 6 pack,2.29,SuperValu,Need,Revolut
-2026-10-18,Food,Orange Juice 1L,2.49,SuperValu,Want,Revolut
-2026-10-18,Food,Carrots 1kg,1.29,SuperValu,Need,Revolut
-2026-10-21,Food,Chicken Breast 690g,5.0,Lidl,Need,PTSB
-2026-10-21,Food,Low Fat Cottage Cheese 300g,1.49,Lidl,Need,PTSB
-2026-10-21,Food,Oats 1kg,1.19,Lidl,Need,PTSB
-2026-10-21,Food,Bananas 1kg,1.59,Lidl,Need,PTSB
-2026-10-21,Food,Frozen Berries 1kg,4.49,Lidl,Need,PTSB
-2026-10-21,Food,Potatoes 2.5kg,3.49,Lidl,Need,PTSB
-2026-10-21,Food,Zero Calorie Sauce 350ml,2.49,Lidl,Want,PTSB
-2026-10-21,Food,Protein Cheese 200g,3.49,Lidl,Want,PTSB
-2026-10-24,Food,Skyr 0% 1kg,2.99,SuperValu,Need,Revolut
-2026-10-24,Food,Semi-Skimmed Milk 2L,2.19,SuperValu,Need,Revolut
-2026-10-24,Food,Free Range Eggs 10 pack,3.49,SuperValu,Need,Revolut
-2026-10-24,Food,Chicken Breast 600g,5.99,SuperValu,Need,Revolut
-2026-10-24,Food,Philadelphia Protein 165g,2.49,SuperValu,Want,Revolut
-2026-10-24,Food,Carrots 1kg,1.29,SuperValu,Need,Revolut
-2026-10-24,Food,White Vinegar 500ml,0.89,SuperValu,Need,Revolut
-2026-10-24,Food,Ground Paprika 45g,1.19,SuperValu,Need,Revolut
-2026-10-27,Food,Skyr 0% 1kg,2.99,SuperValu,Need,PTSB
-2026-10-27,Food,Baby Potatoes 1kg,2.49,SuperValu,Need,PTSB
-2026-10-27,Food,Garlic 1 bulb,0.69,SuperValu,Need,PTSB
-2026-10-27,Food,Philadelphia Protein 165g,2.49,SuperValu,Want,PTSB
-2026-10-27,Food,Laughing Cow Light 8 pack,2.75,SuperValu,Want,PTSB
-2026-10-27,Food,Grated Cheese 200g,2.49,SuperValu,Want,PTSB
-2026-10-27,Food,Butter 250g,2.49,SuperValu,Need,PTSB
-2026-10-27,Food,Milk 2L,2.19,SuperValu,Need,PTSB
-2026-10-29,Food,Oats 1kg,1.19,Lidl,Need,Cash
-2026-10-29,Food,Free Range Eggs 10 pack,3.29,Lidl,Need,Cash
-2026-10-29,Food,Chicken Breast 690g,5.0,Lidl,Need,Cash
-2026-10-29,Food,Skyr 0% 1kg,2.79,Lidl,Need,Cash
-2026-10-29,Food,Frozen Mixed Berries 1kg,4.49,Lidl,Need,Cash
-2026-10-29,Food,Potatoes 2.5kg,3.49,Lidl,Need,Cash
-2026-10-29,Food,Greek Yogurt 0% 1kg,1.85,Lidl,Need,Cash
-2026-10-29,Food,Teriyaki Sauce 250ml,1.69,Lidl,Want,Cash
+2026-09-07,Food,Biscuits,1.79,Aldi,Want,PTSB
+2026-09-07,Food,Chicken thighs,4.79,Aldi,Need,Cash
+2026-09-07,Food,Cucumber,0.89,Aldi,Need,PTSB
+2026-09-07,Food,Tomatoes,1.49,Aldi,Need,PTSB
+2026-09-09,Food,Eggs,3.49,Lidl,Need,Cash
+2026-09-09,Food,Milk,1.55,Lidl,Need,PTSB
+2026-09-09,Food,Oats,1.29,Lidl,Need,Cash
+2026-09-09,Household,Washing-up liquid,1.29,Lidl,Need,Revolut
+2026-09-11,Food,Bread,1.69,Lidl,Need,Cash
+2026-09-11,Food,Milk,1.55,Lidl,Need,Cash
+2026-09-11,Food,Oats,1.29,Lidl,Need,Cash
+2026-09-12,Food,Apples,2.15,Aldi,Need,Revolut
+2026-09-12,Food,Biscuits,1.79,Aldi,Want,PTSB
+2026-09-12,Food,Tomatoes,1.49,Aldi,Need,Revolut
+2026-09-13,Food,Ice cream cone,7.00,Gino's,Want,Cash
+2026-09-14,Food,Apples,2.15,Aldi,Need,PTSB
+2026-09-14,Food,Biscuits,1.79,Aldi,Want,PTSB
+2026-09-14,Clothing,T-shirt,20.00,Zara,Want,Revolut
+2026-09-16,Food,Apples,2.15,Aldi,Need,Revolut
+2026-09-16,Food,Chicken thighs,4.79,Aldi,Need,Revolut
+2026-09-16,Food,Protein pudding,1.49,Aldi,Want,Revolut
+2026-09-18,Food,Chicken breast,5.49,Lidl,Need,Revolut
+2026-09-18,Food,Crisps,1.25,Lidl,Want,PTSB
+2026-09-18,Food,Greek yoghurt,1.85,Lidl,Need,Cash
+2026-09-18,Food,Milk,1.55,Lidl,Need,Cash
+2026-09-18,Household,Batteries,4.99,Woodies,Need,PTSB
+2026-09-19,Food,Ice cream cone,7.00,Gino's,Want,Cash
+2026-09-19,Food,Bananas,1.79,Lidl,Need,PTSB
+2026-09-19,Food,Frozen berries,4.49,Lidl,Want,PTSB
+2026-09-19,Food,Oats,1.29,Lidl,Need,Revolut
+2026-09-19,Food,Potatoes,2.19,Lidl,Need,PTSB
+2026-09-21,Food,Greek yoghurt,1.85,Lidl,Need,PTSB
+2026-09-21,Food,Oats,1.29,Lidl,Need,Cash
+2026-09-23,Food,Bananas,1.79,Lidl,Need,Revolut
+2026-09-23,Household,Washing-up liquid,1.29,Lidl,Need,PTSB
+2026-09-25,Food,Chicken thighs,4.79,Aldi,Need,PTSB
+2026-09-25,Food,Cucumber,0.89,Aldi,Need,Cash
+2026-09-26,Food,Cottage cheese,2.00,Tesco,Need,Cash
+2026-09-26,Food,Ice cream,3.50,Tesco,Want,Cash
+2026-09-26,Household,Toothpaste,2.50,Tesco,Need,PTSB
+2026-09-28,Food,Cheese,3.25,SuperValu,Need,Revolut
+2026-09-28,Food,Chicken breast,6.99,SuperValu,Need,Cash
+2026-09-28,Food,Donuts,2.50,SuperValu,Want,PTSB
+2026-09-30,Food,Cheese,3.25,SuperValu,Need,Cash
+2026-09-30,Food,Chicken breast,6.99,SuperValu,Need,Cash
+2026-09-30,Food,Strawberries,3.49,SuperValu,Want,Revolut
+2026-10-01,Furniture,Wall shelf,10.00,IKEA,Need,PTSB
+2026-10-02,Food,Ice cream cone,7.00,Gino's,Want,PTSB
+2026-10-02,Food,Chicken breast,5.49,Lidl,Need,Revolut
+2026-10-02,Food,Milk,1.55,Lidl,Need,Revolut
+2026-10-03,Food,Apples,2.15,Aldi,Need,PTSB
+2026-10-03,Food,Protein pudding,1.49,Aldi,Want,Cash
+2026-10-03,Food,Tomatoes,1.49,Aldi,Need,Cash
+2026-10-05,Food,Biscuits,1.79,Aldi,Want,Cash
+2026-10-05,Food,Protein pudding,1.49,Aldi,Want,Revolut
+2026-10-07,Food,Apples,2.15,Aldi,Need,Revolut
+2026-10-07,Food,Biscuits,1.79,Aldi,Want,Revolut
+2026-10-09,Food,Biscuits,1.79,Aldi,Want,Revolut
+2026-10-09,Food,Cucumber,0.89,Aldi,Need,PTSB
+2026-10-10,Food,Bananas,1.79,Lidl,Need,Revolut
+2026-10-10,Food,Bread,1.69,Lidl,Need,Cash
+2026-10-10,Food,Frozen berries,4.49,Lidl,Want,PTSB
+2026-10-10,Household,Washing-up liquid,1.29,Lidl,Need,PTSB
+2026-10-12,Household,Storage box,4.00,IKEA,Need,Revolut
+2026-10-12,Food,Cheese,3.25,SuperValu,Need,Cash
+2026-10-12,Food,Chicken breast,6.99,SuperValu,Need,Cash
+2026-10-12,Food,Donuts,2.50,SuperValu,Want,PTSB
+2026-10-12,Food,Wraps,2.29,SuperValu,Need,PTSB
+2026-10-14,Food,Oats,1.29,Lidl,Need,Cash
+2026-10-14,Household,Washing-up liquid,1.29,Lidl,Need,Revolut
+2026-10-16,Food,Cheese,3.25,SuperValu,Need,Cash
+2026-10-16,Food,Chicken breast,6.99,SuperValu,Need,PTSB
+2026-10-16,Food,Strawberries,3.49,SuperValu,Want,PTSB
+2026-10-16,Food,Wraps,2.29,SuperValu,Need,Cash
+2026-10-17,Food,Biscuits,1.79,Aldi,Want,Cash
+2026-10-17,Food,Tomatoes,1.49,Aldi,Need,PTSB
+2026-10-17,Household,Cutlery set,10.00,Woodies,Need,Revolut
+2026-10-19,Food,Ice cream cone,7.00,Gino's,Want,Cash
+2026-10-19,Food,Cottage cheese,2.00,Tesco,Need,PTSB
+2026-10-19,Food,Skyr yoghurt,2.25,Tesco,Need,Cash
+2026-10-21,Household,Halloween LED decoration,7.99,IKEA,Want,Revolut
+2026-10-21,Food,Bread,1.69,Lidl,Need,PTSB
+2026-10-21,Food,Greek yoghurt,1.85,Lidl,Need,Cash
+2026-10-21,Household,Kitchen roll,2.49,Lidl,Need,PTSB
+2026-10-23,Household,Halloween window stickers,6.49,Amazon,Want,Revolut
+2026-10-23,Food,Crisps,1.25,Lidl,Want,Revolut
+2026-10-23,Food,Greek yoghurt,1.85,Lidl,Need,Revolut
+2026-10-23,Household,Washing-up liquid,1.29,Lidl,Need,Revolut
+2026-10-24,Food,Chicken thighs,4.79,Aldi,Need,Revolut
+2026-10-24,Food,Cucumber,0.89,Aldi,Need,Revolut
+2026-10-24,Food,Tomatoes,1.49,Aldi,Need,Revolut
+2026-10-24,Household,Halloween LED decoration,7.99,IKEA,Want,PTSB
+2026-10-25,Food,Halloween chocolate sweets,3.49,Lidl,Want,PTSB
+2026-10-26,Food,Chocolate,1.39,Lidl,Want,Revolut
+2026-10-26,Household,Washing-up liquid,1.29,Lidl,Need,PTSB
+2026-10-27,Household,Halloween string lights,12.99,Amazon,Want,PTSB
+2026-10-28,Food,Bread,1.69,Lidl,Need,Revolut
+2026-10-28,Food,Greek yoghurt,1.85,Lidl,Need,Revolut
+2026-10-28,Food,Milk,1.55,Lidl,Need,Revolut
+2026-10-28,Household,Halloween pumpkin decoration,6.99,Woodies,Want,PTSB
+2026-10-30,Food,Cheese,3.25,SuperValu,Need,PTSB
+2026-10-30,Food,Chicken breast,6.99,SuperValu,Need,Cash
+2026-10-30,Food,Wraps,2.29,SuperValu,Need,Cash
+2026-10-30,Food,Halloween assorted sweets,4.99,Tesco,Want,Revolut
+2026-10-31,Food,Halloween assorted sweets,9.99,Amazon,Want,Revolut
+2026-10-31,Food,Halloween sweets,5.49,Lidl,Want,Revolut
+2026-10-31,Food,Ice cream,3.50,Tesco,Want,Cash
+2026-10-31,Food,Skyr yoghurt,2.25,Tesco,Need,Revolut
+2026-10-31,Food,Zero sugar energy drink,1.75,Tesco,Want,PTSB
