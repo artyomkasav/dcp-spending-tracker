@@ -8,7 +8,6 @@ date,category,item,amount,shop,need_want,payment_method
 2026-10-09,Food,Frozen Mixed Berries 1kg,4.49,Lidl,Need,Revolut
 2026-10-09,Food,Greek Yogurt 0% 1kg,1.85,Lidl,Need,Revolut
 2026-10-09,Food,Konjac Noodles 200g,2.49,Lidl,Want,Revolut
-2026-10-12,Food,Skyr 0% 1kg,2.99,Tesco,Need,PTSB
 2026-10-12,Food,Cottage Cheese 300g,1.49,Tesco,Need,PTSB
 2026-10-12,Food,Philadelphia Protein 165g,2.49,Tesco,Want,PTSB
 2026-10-12,Food,Carrots 1kg,1.19,Tesco,Need,PTSB
@@ -27,7 +26,6 @@ date,category,item,amount,shop,need_want,payment_method
 2026-10-15,Food,Peas Frozen 900g,1.39,Aldi,Need,Cash
 2026-10-15,Food,Teriyaki Sauce 250ml,1.69,Aldi,Want,Cash
 2026-10-15,Food,Hot Chilli Sauce 200ml,1.49,Aldi,Want,Cash
-2026-10-18,Food,Skyr 0% 1kg,2.99,SuperValu,Need,Revolut
 2026-10-18,Food,Baby Potatoes 1kg,2.49,SuperValu,Need,Revolut
 2026-10-18,Food,Philadelphia Protein 165g,2.49,SuperValu,Want,Revolut
 2026-10-18,Food,Laughing Cow Light 8 pack,2.75,SuperValu,Want,Revolut
@@ -36,7 +34,6 @@ date,category,item,amount,shop,need_want,payment_method
 2026-10-18,Food,Orange Juice 1L,2.49,SuperValu,Want,Revolut
 2026-10-18,Food,Carrots 1kg,1.29,SuperValu,Need,Revolut
 2026-10-21,Food,Chicken Breast 690g,5.0,Lidl,Need,PTSB
-2026-10-21,Food,Skyr 0% 1kg,2.79,Lidl,Need,PTSB
 2026-10-21,Food,Low Fat Cottage Cheese 300g,1.49,Lidl,Need,PTSB
 2026-10-21,Food,Oats 1kg,1.19,Lidl,Need,PTSB
 2026-10-21,Food,Bananas 1kg,1.59,Lidl,Need,PTSB
@@ -68,28 +65,3 @@ date,category,item,amount,shop,need_want,payment_method
 2026-10-29,Food,Potatoes 2.5kg,3.49,Lidl,Need,Cash
 2026-10-29,Food,Greek Yogurt 0% 1kg,1.85,Lidl,Need,Cash
 2026-10-29,Food,Teriyaki Sauce 250ml,1.69,Lidl,Want,Cash
-2026-10-09,Furniture,Wall shelf,10.0,IKEA,Need,Revolut
-2026-10-09,Furniture,Wall shelf,10.0,IKEA,Need,Revolut
-2026-10-09,Furniture,Picture frame,4.0,IKEA,Want,Revolut
-2026-10-09,Furniture,Picture frame,4.0,IKEA,Want,Revolut
-2026-10-09,Furniture,Picture frame,4.0,IKEA,Want,Revolut
-2026-10-09,Furniture,Office chair,65.0,IKEA,Need,Revolut
-2026-10-12,Food,Haribo sweets 3kg,25.0,Amazon,Want,Revolut
-2026-10-15,Household,Cutlery set,10.0,Woodies,Need,PTSB
-2026-10-18,Clothing,Jeans,50.0,Zara,Need,Cash
-2026-10-18,Clothing,T-shirt,20.0,Zara,Want,Cash
-2026-10-21,Entertainment,Cinema ticket,20.0,Cinema,Want,PTSB
-2026-10-21,Entertainment,Cinema ticket,20.0,Cinema,Want,PTSB
-2026-10-24,Food,Ice cream cone (3 scoops),7.0,Gino's,Want,Cash
-2026-10-24,Food,Ice cream cone (3 scoops),7.0,Gino's,Want,Cash
-2026-10-24,Food,Ice cream cone (3 scoops),7.0,Gino's,Want,Cash
-2026-10-10,Household,Storage box,6.99,IKEA,Need,Revolut
-2026-10-10,Household,LED desk lamp,14.99,IKEA,Want,Revolut
-2026-10-13,Electronics,USB-C charging cable,8.99,Amazon,Need,Revolut
-2026-10-13,Electronics,Wireless mouse,16.99,Amazon,Want,Revolut
-2026-10-16,Household,Kitchen utensil set,7.5,Woodies,Need,PTSB
-2026-10-16,Household,Cleaning cloths,3.0,Woodies,Need,PTSB
-2026-10-19,Clothing,Socks 5-pack,8.0,Zara,Need,Cash
-2026-10-22,Entertainment,Cinema snacks,9.5,Cinema,Want,PTSB
-2026-10-26,Household,Picture hanging hooks,4.5,Woodies,Need,PTSB
-2026-10-28,Electronics,Phone stand,11.99,Amazon,Want,Revolut

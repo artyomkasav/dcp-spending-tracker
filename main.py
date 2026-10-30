@@ -71,6 +71,31 @@ def create_table():
             )
         """)
 
+def save_database_to_csv():
+    """Export all purchases from SQLite to the CSV file."""
+    columns = [
+        "date",
+        "category",
+        "item",
+        "amount",
+        "shop",
+        "need_want",
+        "payment_method"
+    ]
+
+    with sqlite3.connect(DB_PATH) as connection:
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT date, category, item, amount, shop, need_want, payment_method
+            FROM spending
+            ORDER BY date, id
+        """)
+        rows = cursor.fetchall()
+
+    with CSV_PATH.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(columns)
+        writer.writerows(rows)
 
 def load_csv_if_database_empty():
     """Import CSV records only when the database is empty."""
@@ -268,19 +293,7 @@ def add_purchase():
             )
         """, row)
 
-    file_exists = CSV_PATH.exists()
-
-    with CSV_PATH.open(
-        "a", newline="", encoding="utf-8"
-    ) as file:
-        writer = csv.DictWriter(
-            file, fieldnames=REQUIRED_COLUMNS
-        )
-
-        if not file_exists or CSV_PATH.stat().st_size == 0:
-            writer.writeheader()
-
-        writer.writerow(row)
+    save_database_to_csv()
 
     print("Purchase added successfully!")
 
@@ -435,7 +448,7 @@ def delete_purchase():
             "DELETE FROM spending WHERE id = ?",
             (purchase_id,)
         )
-
+    save_database_to_csv()
     print("Purchase deleted from database.")
     print("Note: the CSV file has not been changed.")
 
