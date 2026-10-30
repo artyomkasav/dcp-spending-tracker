@@ -1,6 +1,5 @@
 
-import csv
-import sqlite3
+import csv, math, sqlite3
 from datetime import date
 from pathlib import Path
 
@@ -24,25 +23,30 @@ def validate_row(row):
     errors = []
 
     for column in REQUIRED_COLUMNS:
-        if not row.get(column, "").strip():
+        value = str(row.get(column) or "").strip()
+        if not value:
             errors.append(f"{column} cannot be empty")
 
+    # Validate date
     try:
-        date.fromisoformat(row["date"])
-    except (ValueError, TypeError):
-        errors.append("Date must use YYYY-MM-DD format")
+        purchase_date = date.fromisoformat(row["date"])
+        if purchase_date.isoformat() != row["date"]:
+            errors.append("Date must use YYYY-MM-DD format")
+    except (ValueError, TypeError, KeyError):
+        errors.append("Invalid date. Use YYYY-MM-DD")
 
+    # Validate amount
     try:
         amount = float(row["amount"])
-        if amount <= 0:
-            errors.append("Amount must be greater than zero")
-    except (ValueError, TypeError):
-        errors.append("Amount must be a number")
+        if not math.isfinite(amount) or amount <= 0:
+            errors.append("Amount must be a positive finite number")
+    except (ValueError, TypeError, KeyError):
+        errors.append("Amount must be numeric")
 
-    if row.get("need_want", "") not in {"Need", "Want"}:
+    if row.get("need_want") not in {"Need", "Want"}:
         errors.append("need_want must be Need or Want")
 
-    if row.get("payment_method", "") not in {
+    if row.get("payment_method") not in {
         "Cash", "Revolut", "PTSB"
     }:
         errors.append("Payment method must be Cash, Revolut or PTSB")
@@ -127,7 +131,7 @@ def show_all_purchases():
     """Display all purchases stored in the database."""
     with sqlite3.connect(DB_PATH) as connection:
         rows = connection.execute("""
-            SELECT date, item, amount, shop, payment_method
+            SELECT id, date, item, amount, shop, payment_method
             FROM spending
             ORDER BY date DESC, id DESC
         """).fetchall()
@@ -137,12 +141,12 @@ def show_all_purchases():
         return
 
     print("\n--- ALL PURCHASES ---")
-    for purchase_date, item, amount, shop, payment in rows:
-        print(
-            f"{purchase_date} | {item} | "
-            f"€{amount:.2f} | {shop} | {payment}"
-        )
 
+    for purchase_id, purchase_date, item, amount, shop, payment in rows:
+        print(
+            f"ID: {purchase_id} | {purchase_date} | "
+            f"{item} | €{amount:.2f} | {shop} | {payment}"
+        )
 
 def show_total_spending():
     """Display the total amount spent."""
@@ -324,7 +328,33 @@ def show_average_purchase():
     print(f"\nAverage purchase: €{average:.2f}")
     print(f"Total number of purchases: {count}")
 
+def search_purchase():
+    """Search purchases by item name."""
+    keyword = input("Enter item name to search: ").strip()
 
+    if not keyword:
+        print("Search term cannot be empty.")
+        return
+
+    with sqlite3.connect(DB_PATH) as connection:
+        rows = connection.execute("""
+            SELECT id, date, item, amount, shop
+            FROM spending
+            WHERE item LIKE ?
+            ORDER BY date DESC
+        """, (f"%{keyword}%",)).fetchall()
+
+    if not rows:
+        print("No matching purchases found.")
+        return
+
+    print("\n--- SEARCH RESULTS ---")
+
+    for purchase_id, purchase_date, item, amount, shop in rows:
+        print(
+            f"ID: {purchase_id} | {purchase_date} | "
+            f"{item} | €{amount:.2f} | {shop}"
+        )
 
 def main_menu():
     """Display the main menu and handle user choices."""
@@ -340,6 +370,8 @@ def main_menu():
         print("8. Needs vs Wants")
         print("9. Average purchase")
         print("10. Exit")
+        print("11. Search purchases")
+        print("12. Delete purchase")
 
         choice = input("\nChoose an option: ").strip()
 
@@ -363,11 +395,49 @@ def main_menu():
             show_average_purchase()
         elif choice == "10":
             print("Goodbye!")
+        elif choice == "11":
+            search_purchase()
+        elif choice == "12":
+            delete_purchase()
             break
         else:
             print("Invalid option. Please choose 1-10.")
 
+def delete_purchase():
+    """Delete a purchase using its database ID."""
+    try:
+        purchase_id = int(input("Enter purchase ID to delete: "))
+    except ValueError:
+        print("ID must be a number.")
+        return
 
+    with sqlite3.connect(DB_PATH) as connection:
+        row = connection.execute("""
+            SELECT item, amount, shop
+            FROM spending
+            WHERE id = ?
+        """, (purchase_id,)).fetchone()
+
+        if row is None:
+            print("Purchase not found.")
+            return
+
+        item, amount, shop = row
+
+        print(f"\nSelected: {item} | €{amount:.2f} | {shop}")
+        confirmation = input("Delete this purchase? (yes/no): ").strip().lower()
+
+        if confirmation != "yes":
+            print("Deletion cancelled.")
+            return
+
+        connection.execute(
+            "DELETE FROM spending WHERE id = ?",
+            (purchase_id,)
+        )
+
+    print("Purchase deleted from database.")
+    print("Note: the CSV file has not been changed.")
 
 if __name__ == "__main__":
     create_table()
