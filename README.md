@@ -2,88 +2,72 @@
 
 ## 1. About the Project
 
-Spending Tracker is a Python project made for the Data Centric Programming 2026 assignment.
+Spending Tracker is a Python application I made for the Data Centric Programming 2026 assignment.
 
-The program records purchases and helps explore where money is spent. Each row in the dataset is one purchased item.
+The idea of the project is simple: record purchases and use the data to understand where the money goes. Each row in the CSV file represents one purchased item. The program can display the records, search them, calculate totals and compare spending in different shops and categories.
 
-The project uses a CSV file to keep the purchase records. When the program starts, it reads the CSV file and updates the SQLite database from it. This means the CSV file is the main copy of the data.
-
-The project can:
-- Show and search purchases.
-- Calculate total and average spending.
-- Compare spending between shops and categories.
-- Compare Needs and Wants.
-- Show spending by payment method.
-- Filter purchases by date.
-- Add and delete purchases.
-- Create charts from the CSV data.
+I used Python, CSV, SQLite, SQL, pandas and Matplotlib to build the project.
 
 ## 2. Project Goals
 
-The goals of this project are to:
+The main goals were to:
 
-- Record purchases with their dates, prices and other details.
-- Keep the records in a CSV file.
-- Store the records in an SQLite database.
-- Check that the data is valid.
-- Use SQL to answer questions about spending.
-- Use pandas to analyse the data.
-- Use Matplotlib to create charts.
-- Make it possible to explore the data through a simple terminal menu.
+- Record purchases with their date, item, price, shop and payment method.
+- Store the records in a CSV file.
+- Use an SQLite database to work with the records.
+- Check the data before adding it to the database.
+- Write SQL queries to calculate and group spending.
+- Use pandas to analyse the dataset.
+- Create charts to make the results easier to understand.
+- Build a simple menu so the user can work with the data.
 
 ## 3. Tools Used
 
-| Tool | What it is used for |
+| Tool | How I used it |
 |---|---|
-| Python | Main programming language |
-| CSV | Stores the purchase records |
-| SQLite | Stores the records in a database |
-| SQL | Searches and groups the database records |
-| pandas | Reads and analyses the CSV data |
-| Matplotlib | Creates charts |
-| Git and GitHub | Saves the project and tracks changes |
+| Python | To write the application and connect all parts of the project |
+| CSV | To store the purchase records |
+| SQLite | To store and query the purchase data |
+| SQL | To search, filter and group records and calculate totals |
+| pandas | To load, organise and analyse the data |
+| Matplotlib | To create charts |
+| Git and GitHub | To save my work and keep track of changes |
 
 ## 4. Dataset
 
 The dataset is stored in `data/spendings.csv`.
 
-Each row is one purchased item. It is not one full shopping receipt. For example, if a shopping trip contains five different items, it can be recorded as five rows.
+Each row represents one purchased item, not one complete shopping receipt. For example, if a shopping trip contains several different items, each item is recorded on a separate row.
 
 ### Data Dictionary
 
-| Column | Type | Meaning |
+| Column | Data type | Description |
 |---|---|---|
-| `date` | DATE / TEXT in CSV | Date of the purchase, in `YYYY-MM-DD` format |
-| `category` | TEXT | Type of purchase, for example Food or Household |
+| `date` | DATE / TEXT | Date of the purchase in `YYYY-MM-DD` format |
+| `category` | TEXT | Category of the purchase, for example Food or Household |
 | `item` | TEXT | Name of the purchased item |
-| `amount` | REAL / number | Price of the item in euros |
-| `shop` | TEXT | Shop where the item was bought |
-| `need_want` | TEXT | Whether the purchase was a Need or a Want |
-| `payment_method` | TEXT | How it was paid: Cash, Revolut or PTSB |
+| `amount` | REAL | Price of the item in euros |
+| `shop` | TEXT | Shop where the item was purchased |
+| `need_want` | TEXT | Shows whether the purchase is a Need or a Want |
+| `payment_method` | TEXT | Payment method: Cash, Revolut or PTSB |
 
 ### Data Collection
 
-Purchase details should be recorded from real purchases, receipts or transaction records.
+The purchase records are entered into the CSV file. The information for each record includes the date, item, price, shop, category, whether it was a Need or a Want, and the payment method.
 
-Dates, item names, shops, prices and payment methods should be entered as accurately as possible. Missing information should not be guessed or made up.
-
-The dataset used for the final assignment must contain real records collected for this project. Test or example data must not be presented as real purchases.
+The values need to be checked against the original purchase information, such as receipts or transaction records. Missing prices or other details should not be guessed.
 
 ## 5. Research Questions
 
-This project looks at these questions:
+I chose these questions for the project:
 
-1. Which shops have the highest total spending?
+1. Which shops account for the highest total spending?
 2. How much is spent on Needs compared with Wants?
-3. How does spending change from one date to another?
+3. How does spending change between different dates?
 
-The program also shows:
-- Spending by category.
-- Spending by payment method.
-- The average price of a purchase.
-- The most expensive purchases.
+The program also makes it possible to look at spending by category and payment method, as well as the average price of a purchase.
 
-## 6. Project Files
+## 6. Project Structure
 
 ```text
 dcp-spending-tracker/
@@ -105,41 +89,48 @@ dcp-spending-tracker/
 └── .gitignore
 ```
 
-`spending.db` is the SQLite database created by the program. If it is ignored by Git, it may not appear in the GitHub repository. The program can create it again when it runs.
+The `data` folder contains the CSV file. The `charts` folder contains the graphs created by the analysis script. The SQLite database is created by the application when it runs.
 
-## 7. How the Program Works
+## 7. Application Features
 
-### CSV and Database
+### Data Validation
 
-The CSV file is the main source of purchase data.
+Before records are added to the database, the program checks that:
 
-When `main.py` starts, it:
-1. Reads the CSV file.
-2. Checks that the required columns are present.
-3. Checks dates, prices and other required values.
-4. Replaces the records in the SQLite database with the current CSV records.
+- All required fields have a value.
+- Dates use the `YYYY-MM-DD` format.
+- Amounts are numeric and greater than zero.
+- The `need_want` value is either `Need` or `Want`.
+- The payment method is `Cash`, `Revolut` or `PTSB`.
 
-If the CSV contains invalid records, the program stops instead of replacing the CSV with database data.
+If the CSV contains invalid records, the program displays an error and stops the import.
 
-When a purchase is added or deleted through the menu, the change is saved to the database and written back to the CSV file.
+### CSV and SQLite
 
-### Database Queries
+The CSV file is the main source of the purchase data.
 
-The program uses SQL queries to:
+When `main.py` starts, it reads the CSV file, checks the records and updates the SQLite database using the current CSV contents. This means that changes made directly to the CSV are loaded into the database the next time the program starts.
+
+When a purchase is added or deleted through the menu, the database is updated and the CSV file is saved as well.
+
+### SQL Queries
+
+I used SQL queries to:
+
+- Display all purchases.
 - Calculate total spending.
 - Group spending by shop.
 - Group spending by category.
 - Compare Needs and Wants.
-- Group spending by payment method.
+- Calculate spending by payment method.
 - Calculate the average purchase amount.
 - Filter purchases by date.
-- Search for purchases.
+- Search for an item.
+- Delete a selected purchase.
 
 ### Terminal Menu
 
-Run `main.py` to open the menu.
-
-The menu has these options:
+The program has an interactive menu with these options:
 
 1. Show all purchases.
 2. Show total spending.
@@ -154,104 +145,94 @@ The menu has these options:
 11. Delete a purchase.
 12. Exit.
 
-## 8. Data Analysis and Charts
+The menu allows the user to explore the records without having to write SQL queries manually.
 
-`analysis.py` reads the data from `data/spendings.csv` using pandas.
+## 8. Data Analysis and Visualisation
 
-It prints:
+The `analysis.py` file reads the CSV data using pandas. It prepares the dates and amounts, checks for invalid records and groups the data to calculate different statistics.
+
+The analysis displays:
+
 - Number of purchases.
 - Total spending.
-- Average purchase price.
-- Most expensive and cheapest purchases.
-- Date range in the dataset.
+- Average purchase amount.
+- Most expensive and cheapest purchase.
+- Date range of the dataset.
 - Spending by shop.
 - Spending by category.
 - Spending on Needs and Wants.
 - Spending by payment method.
-- Daily spending.
+- Total spending for each date.
 - The ten most expensive purchases.
 
-It also creates five charts using Matplotlib:
+Matplotlib is used to create five charts:
 
-1. `spending_by_shop.png` — total spending at each shop.
-2. `spending_by_category.png` — total spending in each category.
-3. `needs_vs_wants.png` — comparison of Needs and Wants.
-4. `daily_spending.png` — spending on each date.
-5. `payment_methods.png` — spending by payment method.
+| Chart | What it shows |
+|---|---|
+| `spending_by_shop.png` | Total spending in each shop |
+| `spending_by_category.png` | Total spending in each category |
+| `needs_vs_wants.png` | How spending is split between Needs and Wants |
+| `daily_spending.png` | Total spending on each date |
+| `payment_methods.png` | Total spending for each payment method |
 
-The charts are saved in the `charts` folder. They do not open automatically when the script runs. Open the PNG files from that folder to view them.
+The charts are saved in the `charts` folder. They are not opened automatically when the script runs. I can open the PNG files from that folder or use them during the project demonstration.
 
-## 9. How to Run
+## 9. How to Run the Project
 
 Python 3 is required.
 
-Install the libraries used for analysis:
+Install the libraries for the analysis:
 
 ```bash
 pip install pandas matplotlib
 ```
 
-SQLite is included with Python, so it does not need to be installed separately.
+SQLite is included with Python, so there is no separate installation needed for it.
 
-### Run the spending tracker
+Open a terminal in the main project folder.
+
+### Run the Spending Tracker
 
 ```bash
 python main.py
 ```
 
-### Run the analysis and create the charts
+### Run the Analysis
 
 ```bash
 python analysis.py
 ```
 
-Run both commands from the main project folder.
+The first command opens the terminal menu. The second command prints the analysis results and creates the charts in the `charts` folder.
 
-## 10. Current Project Progress
+## 10. Findings
 
-| Part | Status |
-|---|---|
-| CSV file with the required columns | Implemented |
-| SQLite database | Implemented |
-| CSV data validation | Implemented |
-| CSV-to-database synchronisation | Implemented |
-| SQL queries and summaries | Implemented |
-| Terminal menu | Implemented |
-| Add and delete purchases | Implemented |
-| Search and date filter | Implemented |
-| pandas analysis | Implemented |
-| Five charts | Implemented |
-| Final data collection evidence | Still needs checking |
-| Findings based on the final real dataset | To be completed |
-| Project reflection | To be completed |
-| Final screenshots and demonstration preparation | To be completed |
+While working on this project, I learned how Python can be used together with an SQLite database. One of the main things I learned was how to write SQL queries inside a Python program and use the results in the application. I also got more practice with commands such as `SELECT`, `WHERE`, `GROUP BY` and `ORDER BY`.
 
-## 11. Findings
+I learned how to organise data in a DataFrame with pandas and use functions such as `groupby()`, `sum()`, `mean()` and `nlargest()` to get useful information from the dataset.
 
-Complete this section after running the analysis on the final collected dataset.
+The charts make the spending information easier to understand. For example, the shop and category charts make it easier to compare totals, while the daily spending chart shows how the totals change over time. The Needs vs Wants chart gives a quick comparison between the two types of purchases.
 
-Use the results to answer the research questions:
+The project also showed me why data needs to be consistent. If shop names or categories are entered in different ways, the results can be split into separate groups. Cleaning text values before grouping helps avoid this problem.
 
-- Which shop has the highest total spending?
-- Is more money spent on Needs or Wants?
-- Which dates have the highest spending?
+## 11. Reflection
 
-Add the actual results from `analysis.py` here. Do not use example or test data as final findings.
+The project helped me improve my Python skills and understand how different tools can work together in one application.
+
+Working with SQLite was useful because I had to learn how to connect Python to a database, execute SQL queries and use the returned data. At the beginning, implementing SQL in Python was new to me, but after working on the different menu options I became more comfortable with it.
+
+Matplotlib was a small challenge for me. I had to spend extra time watching YouTube tutorials and learning how to create different chart types, add titles and labels, adjust the layout and save the charts as image files. After some practice, I managed to create the five charts used in this project.
+
+Another important part was keeping the CSV file and the database synchronised. I learned that it is important to decide which file is the main source of data and make sure that changes are handled consistently.
+
+If I had more time, I would improve the menu further and add more ways to filter and compare purchases. I would also like to make the charts interactive in a future version.
+
+Overall, this project gave me practical experience with Python, SQL, SQLite, pandas, Matplotlib and GitHub. It also helped me understand more clearly how data can be collected, stored, checked, analysed and presented.
 
 ## 12. Limitations
 
-The results depend on the data entered into the CSV file.
+The results depend on the records included in the CSV file. The project only analyses purchases that have been recorded, so it may not show every expense.
 
-The dataset only shows the purchases that were recorded. It may not include every expense, so it cannot show all spending outside the recorded period.
+Incorrect or missing information can affect the results. The program checks several common input problems, but it cannot independently confirm that every purchase detail is correct.
 
-The results may also be affected by missing or incorrect records. The project is a small personal spending tracker, not a full banking or budgeting system.
-
-## 13. Reflection
-
-Complete this section before submission.
-
-Write a few sentences in your own words about:
-- What you learned while using Python, SQLite, SQL, pandas and Matplotlib.
-- What problems you had while building the program and how you fixed them.
-- Which part was the hardest.
-- What you would improve if you had more time.
+This is a small personal spending tracker. It is designed for this assignment and is not a full banking or budgeting application.
