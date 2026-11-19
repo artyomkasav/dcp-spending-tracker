@@ -441,7 +441,9 @@ def main_menu() -> None:
         print("9. Average purchase")
         print("10. Search purchases")
         print("11. Delete purchase")
-        print("12. Exit")
+        print("12. Monthly spending report")
+        print("13. Exit")
+
 
         choice = input("\nChoose an option: ").strip()
 
