@@ -70,6 +70,8 @@ def load_data():
         "tesco": "Tesco",
         "supervalu": "SuperValu",
         "gino's": "Gino's",
+        "dunnes": "Dunnes",
+
     }
 
     df["shop"] = df["shop"].apply(
