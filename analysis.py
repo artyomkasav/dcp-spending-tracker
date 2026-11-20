@@ -36,7 +36,7 @@ def load_data():
             df[column]
             .astype("string")
             .str.strip()
-            .str.replace(r"\\s+", " ", regex=True)
+            .str.replace(r"\s+", " ", regex=True)
         )
 
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d", errors="coerce")
