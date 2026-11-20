@@ -113,34 +113,6 @@ def get_database_rows() -> list[tuple]:
         """).fetchall()
 
 
-def rows_match(csv_rows: list[dict], database_rows: list[tuple]) -> bool:
-    if len(csv_rows) != len(database_rows):
-        return False
-
-    for csv_row, db_row in zip(csv_rows, database_rows):
-        csv_values = (
-            csv_row["date"],
-            csv_row["category"],
-            csv_row["item"],
-            round(float(csv_row["amount"]), 2),
-            csv_row["shop"],
-            csv_row["need_want"],
-            csv_row["payment_method"],
-        )
-        db_values = (
-            db_row[0],
-            db_row[1],
-            db_row[2],
-            round(float(db_row[3]), 2),
-            db_row[4],
-            db_row[5],
-            db_row[6],
-        )
-
-        if csv_values != db_values:
-            return False
-
-    return True
 
 
 def save_database_to_csv() -> None:
