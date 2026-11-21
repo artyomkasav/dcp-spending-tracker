@@ -223,14 +223,19 @@ def filter_by_date() -> None:
     end_date = input("End date (YYYY-MM-DD): ").strip()
 
     try:
-        date.fromisoformat(start_date)
-        date.fromisoformat(end_date)
+        start = date.fromisoformat(start_date)
+        end = date.fromisoformat(end_date)
 
-        if start_date > end_date:
+        if start.isoformat() != start_date or end.isoformat() != end_date:
+            print("Invalid date format. Use YYYY-MM-DD.")
+            return
+
+        if start > end:
             print("Start date cannot be after end date.")
             return
+
     except ValueError:
-        print("Invalid date format.")
+        print("Invalid date. Please enter a real date in YYYY-MM-DD format.")
         return
 
     with sqlite3.connect(DB_PATH) as connection:
