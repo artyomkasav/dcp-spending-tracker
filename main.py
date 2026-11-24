@@ -1,5 +1,5 @@
-
-import sqlite3, csv, math
+import sqlite3
+import csv
 from datetime import date
 from pathlib import Path
 
@@ -18,57 +18,53 @@ REQUIRED_COLUMNS = [
 ]
 
 
-def validate_row(row: dict) -> list[str]:
+def validate_row(row):
     errors = []
 
     for column in REQUIRED_COLUMNS:
-        value = str(row.get(column) or "").strip()
-        if not value:
+        if not row.get(column, "").strip():
             errors.append(f"{column} cannot be empty")
 
     try:
-        purchase_date = date.fromisoformat(str(row["date"]))
-        if purchase_date.isoformat() != row["date"]:
-            errors.append("Date must use YYYY-MM-DD format")
+        date.fromisoformat(row["date"])
     except (ValueError, TypeError, KeyError):
-        errors.append("Invalid date. Use YYYY-MM-DD")
+        errors.append("Date must use YYYY-MM-DD format")
 
     try:
         amount = float(row["amount"])
-        if not math.isfinite(amount) or amount <= 0:
-            errors.append("Amount must be a positive finite number")
+        if not amount > 0:
+            errors.append("Amount must be greater than zero")
     except (ValueError, TypeError, KeyError):
-        errors.append("Amount must be numeric")
+        errors.append("Amount must be a number")
 
-    if row.get("need_want") not in {"Need", "Want"}:
-        errors.append("need_want must be Need or Want")
+    if row.get("need_want") not in ["Need", "Want"]:
+        errors.append("Choose Need or Want")
 
-    if row.get("payment_method") not in {"Cash", "Revolut", "PTSB"}:
-        errors.append("Payment method must be Cash, Revolut or PTSB")
+    if row.get("payment_method") not in ["Cash", "Revolut", "PTSB"]:
+        errors.append("Choose Cash, Revolut or PTSB")
 
     return errors
 
 
-def create_table() -> None:
+def create_table():
     with sqlite3.connect(DB_PATH) as connection:
         connection.execute("""
             CREATE TABLE IF NOT EXISTS spending (
-                id INTEGER PRIMARY KEY,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 date TEXT NOT NULL,
                 category TEXT NOT NULL,
                 item TEXT NOT NULL,
                 amount REAL NOT NULL CHECK (amount > 0),
                 shop TEXT NOT NULL,
-                need_want TEXT NOT NULL
-                    CHECK (need_want IN ('Need', 'Want')),
+                need_want TEXT NOT NULL,
                 payment_method TEXT NOT NULL
             )
         """)
 
 
-def read_csv_rows() -> list[dict] | None:
+def read_csv_rows():
     if not CSV_PATH.exists():
-        print(f"CSV file not found: {CSV_PATH}")
+        print("CSV file was not found.")
         return None
 
     try:
@@ -76,92 +72,73 @@ def read_csv_rows() -> list[dict] | None:
             reader = csv.DictReader(file)
 
             if reader.fieldnames != REQUIRED_COLUMNS:
-                print("CSV columns do not match the required format.")
+                print("CSV columns are incorrect.")
                 return None
 
             rows = []
-            has_errors = False
 
             for line_number, row in enumerate(reader, start=2):
                 errors = validate_row(row)
 
                 if errors:
-                    has_errors = True
+                    print(f"Error on CSV line {line_number}:")
                     for error in errors:
-                        print(f"CSV line {line_number}: {error}")
-                else:
-                    row["amount"] = float(row["amount"])
-                    rows.append(row)
+                        print(f"- {error}")
+                    return None
 
-            if has_errors:
-                print("CSV contains invalid records. Correct the file before continuing.")
-                return None
+                row["amount"] = float(row["amount"])
+                rows.append(row)
 
             return rows
 
     except (OSError, csv.Error) as error:
-        print(f"Could not read CSV file: {error}")
+        print(f"Could not read CSV: {error}")
         return None
 
 
-def get_database_rows() -> list[tuple]:
+def save_database_to_csv():
+    CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
+
     with sqlite3.connect(DB_PATH) as connection:
-        return connection.execute("""
+        rows = connection.execute("""
             SELECT date, category, item, amount, shop, need_want, payment_method
             FROM spending
             ORDER BY date, id
         """).fetchall()
 
-
-
-
-def save_database_to_csv() -> None:
-    CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path = CSV_PATH.with_suffix(".tmp")
-
-    with temporary_path.open("w", newline="", encoding="utf-8") as file:
+    with CSV_PATH.open("w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(REQUIRED_COLUMNS)
-        writer.writerows(get_database_rows())
-
-    temporary_path.replace(CSV_PATH)
+        writer.writerows(rows)
 
 
-def synchronize_data() -> bool:
-    csv_rows = read_csv_rows()
+def synchronize_data():
+    rows = read_csv_rows()
 
-    if csv_rows is None:
-        print("Application stopped. The CSV was not changed.")
+    if rows is None:
         return False
 
-    # The CSV file is the source of truth.
-    # Replace the database contents with the current CSV records.
     try:
         with sqlite3.connect(DB_PATH) as connection:
             connection.execute("DELETE FROM spending")
+            connection.executemany("""
+                INSERT INTO spending (
+                    date, category, item, amount, shop, need_want, payment_method
+                )
+                VALUES (
+                    :date, :category, :item, :amount, :shop, :need_want, :payment_method
+                )
+            """, rows)
 
-            if csv_rows:
-                connection.executemany("""
-                    INSERT INTO spending (
-                        date, category, item, amount,
-                        shop, need_want, payment_method
-                    )
-                    VALUES (
-                        :date, :category, :item, :amount,
-                        :shop, :need_want, :payment_method
-                    )
-                """, csv_rows)
-
-        print(f"Loaded {len(csv_rows)} purchases from CSV into the database.")
-        print("CSV is the source of truth. Database synchronised from CSV.")
+        print(f"Loaded {len(rows)} purchases.")
         return True
 
     except sqlite3.Error as error:
-        print(f"Could not synchronise the database: {error}")
+        print(f"Database error: {error}")
         return False
 
 
-def show_all_purchases() -> None:
+def show_all_purchases():
     with sqlite3.connect(DB_PATH) as connection:
         rows = connection.execute("""
             SELECT id, date, item, amount, shop, payment_method
@@ -173,24 +150,18 @@ def show_all_purchases() -> None:
         print("No purchases found.")
         return
 
-    print("\n--- ALL PURCHASES ---")
-    for purchase_id, purchase_date, item, amount, shop, payment in rows:
-        print(
-            f"ID: {purchase_id} | {purchase_date} | "
-            f"{item} | €{amount:.2f} | {shop} | {payment}"
-        )
+    for purchase in rows:
+        print(f"{purchase[0]} | {purchase[1]} | {purchase[2]} | €{purchase[3]:.2f} | {purchase[4]} | {purchase[5]}")
 
 
-def show_total_spending() -> None:
+def show_total_spending():
     with sqlite3.connect(DB_PATH) as connection:
-        total = connection.execute(
-            "SELECT SUM(amount) FROM spending"
-        ).fetchone()[0]
+        total = connection.execute("SELECT SUM(amount) FROM spending").fetchone()[0]
 
-    print(f"\nTotal spending: €{total or 0:.2f}")
+    print(f"Total spending: €{total or 0:.2f}")
 
 
-def show_spending_by_shop() -> None:
+def show_spending_by_shop():
     with sqlite3.connect(DB_PATH) as connection:
         rows = connection.execute("""
             SELECT shop, SUM(amount), COUNT(*)
@@ -199,12 +170,11 @@ def show_spending_by_shop() -> None:
             ORDER BY SUM(amount) DESC
         """).fetchall()
 
-    print("\n--- SPENDING BY SHOP ---")
     for shop, total, count in rows:
-        print(f"{shop}: €{total:.2f} ({count} items)")
+        print(f"{shop}: €{total:.2f} ({count} purchases)")
 
 
-def show_spending_by_category() -> None:
+def show_spending_by_category():
     with sqlite3.connect(DB_PATH) as connection:
         rows = connection.execute("""
             SELECT category, SUM(amount)
@@ -213,29 +183,23 @@ def show_spending_by_category() -> None:
             ORDER BY SUM(amount) DESC
         """).fetchall()
 
-    print("\n--- SPENDING BY CATEGORY ---")
     for category, total in rows:
         print(f"{category}: €{total:.2f}")
 
 
-def filter_by_date() -> None:
+def filter_by_date():
     start_date = input("Start date (YYYY-MM-DD): ").strip()
     end_date = input("End date (YYYY-MM-DD): ").strip()
 
     try:
-        start = date.fromisoformat(start_date)
-        end = date.fromisoformat(end_date)
-
-        if start.isoformat() != start_date or end.isoformat() != end_date:
-            print("Invalid date format. Use YYYY-MM-DD.")
-            return
-
-        if start > end:
-            print("Start date cannot be after end date.")
-            return
-
+        date.fromisoformat(start_date)
+        date.fromisoformat(end_date)
     except ValueError:
-        print("Invalid date. Please enter a real date in YYYY-MM-DD format.")
+        print("Enter valid dates in YYYY-MM-DD format.")
+        return
+
+    if start_date > end_date:
+        print("Start date cannot be after end date.")
         return
 
     with sqlite3.connect(DB_PATH) as connection:
@@ -243,26 +207,23 @@ def filter_by_date() -> None:
             SELECT date, item, amount, shop
             FROM spending
             WHERE date BETWEEN ? AND ?
-            ORDER BY date, id
+            ORDER BY date
         """, (start_date, end_date)).fetchall()
 
     if not rows:
         print("No purchases found for this period.")
         return
 
-    print("\n--- PURCHASES IN SELECTED PERIOD ---")
-    period_total = 0
+    total = 0
 
     for purchase_date, item, amount, shop in rows:
         print(f"{purchase_date} | {item} | €{amount:.2f} | {shop}")
-        period_total += amount
+        total += amount
 
-    print(f"Period total: €{period_total:.2f}")
+    print(f"Period total: €{total:.2f}")
 
 
-def add_purchase() -> None:
-    print("\n--- ADD NEW PURCHASE ---")
-
+def add_purchase():
     row = {
         "date": input("Date (YYYY-MM-DD): ").strip(),
         "category": input("Category: ").strip(),
@@ -276,9 +237,8 @@ def add_purchase() -> None:
     errors = validate_row(row)
 
     if errors:
-        print("\nPurchase was not added:")
         for error in errors:
-            print(f"- {error}")
+            print(error)
         return
 
     row["amount"] = float(row["amount"])
@@ -286,20 +246,18 @@ def add_purchase() -> None:
     with sqlite3.connect(DB_PATH) as connection:
         connection.execute("""
             INSERT INTO spending (
-                date, category, item, amount,
-                shop, need_want, payment_method
+                date, category, item, amount, shop, need_want, payment_method
             )
             VALUES (
-                :date, :category, :item, :amount,
-                :shop, :need_want, :payment_method
+                :date, :category, :item, :amount, :shop, :need_want, :payment_method
             )
         """, row)
 
     save_database_to_csv()
-    print("Purchase added successfully.")
+    print("Purchase added.")
 
 
-def show_spending_by_payment() -> None:
+def show_spending_by_payment():
     with sqlite3.connect(DB_PATH) as connection:
         rows = connection.execute("""
             SELECT payment_method, SUM(amount), COUNT(*)
@@ -308,12 +266,11 @@ def show_spending_by_payment() -> None:
             ORDER BY SUM(amount) DESC
         """).fetchall()
 
-    print("\n--- SPENDING BY PAYMENT METHOD ---")
     for method, total, count in rows:
         print(f"{method}: €{total:.2f} ({count} purchases)")
 
 
-def show_needs_vs_wants() -> None:
+def show_needs_vs_wants():
     with sqlite3.connect(DB_PATH) as connection:
         rows = connection.execute("""
             SELECT need_want, SUM(amount), COUNT(*)
@@ -322,27 +279,26 @@ def show_needs_vs_wants() -> None:
             ORDER BY SUM(amount) DESC
         """).fetchall()
 
-    print("\n--- NEEDS VS WANTS ---")
     for classification, total, count in rows:
-        print(f"{classification}: €{total:.2f} ({count} items)")
+        print(f"{classification}: €{total:.2f} ({count} purchases)")
 
 
-def show_average_purchase() -> None:
+def show_average_purchase():
     with sqlite3.connect(DB_PATH) as connection:
         average, count = connection.execute("""
             SELECT AVG(amount), COUNT(*)
             FROM spending
         """).fetchone()
 
-    print(f"\nAverage purchase: €{(average or 0):.2f}")
-    print(f"Total number of purchases: {count}")
+    print(f"Average purchase: €{(average or 0):.2f}")
+    print(f"Number of purchases: {count}")
 
 
-def search_purchase() -> None:
-    keyword = input("Enter item name to search: ").strip()
+def search_purchase():
+    keyword = input("Enter item name: ").strip()
 
     if not keyword:
-        print("Search term cannot be empty.")
+        print("Search cannot be empty.")
         return
 
     with sqlite3.connect(DB_PATH) as connection:
@@ -350,79 +306,65 @@ def search_purchase() -> None:
             SELECT id, date, item, amount, shop
             FROM spending
             WHERE item LIKE ?
-            ORDER BY date DESC, id DESC
+            ORDER BY date DESC
         """, (f"%{keyword}%",)).fetchall()
 
     if not rows:
         print("No matching purchases found.")
         return
 
-    print("\n--- SEARCH RESULTS ---")
-    for purchase_id, purchase_date, item, amount, shop in rows:
-        print(
-            f"ID: {purchase_id} | {purchase_date} | "
-            f"{item} | €{amount:.2f} | {shop}"
-        )
+    for purchase in rows:
+        print(f"{purchase[0]} | {purchase[1]} | {purchase[2]} | €{purchase[3]:.2f} | {purchase[4]}")
 
 
-def delete_purchase() -> None:
+def delete_purchase():
     try:
-        purchase_id = int(input("Enter purchase ID to delete: "))
+        purchase_id = int(input("Enter purchase ID: "))
     except ValueError:
         print("ID must be a number.")
         return
 
     with sqlite3.connect(DB_PATH) as connection:
-        row = connection.execute("""
+        purchase = connection.execute("""
             SELECT item, amount, shop
             FROM spending
             WHERE id = ?
         """, (purchase_id,)).fetchone()
 
-        if row is None:
+        if purchase is None:
             print("Purchase not found.")
             return
 
-        item, amount, shop = row
-        print(f"\nSelected: {item} | €{amount:.2f} | {shop}")
+        print(f"Selected: {purchase[0]} | €{purchase[1]:.2f} | {purchase[2]}")
         confirmation = input("Delete this purchase? (yes/no): ").strip().lower()
 
         if confirmation != "yes":
             print("Deletion cancelled.")
             return
 
-        cursor = connection.execute(
-            "DELETE FROM spending WHERE id = ?",
-            (purchase_id,)
-        )
-
-        if cursor.rowcount == 0:
-            print("Purchase was not deleted.")
-            return
+        connection.execute("DELETE FROM spending WHERE id = ?", (purchase_id,))
 
     save_database_to_csv()
-    print("Purchase deleted successfully.")
+    print("Purchase deleted.")
 
 
-def main_menu() -> None:
+def main_menu():
     while True:
         print("\n====== SPENDING TRACKER ======")
         print("1. Show all purchases")
         print("2. Show total spending")
         print("3. Spending by shop")
         print("4. Spending by category")
-        print("5. Filter purchases by date")
-        print("6. Add a new purchase")
+        print("5. Filter by date")
+        print("6. Add purchase")
         print("7. Spending by payment method")
         print("8. Needs vs Wants")
         print("9. Average purchase")
         print("10. Search purchases")
         print("11. Delete purchase")
-        print("12. Monthly spending report")
-        print("13. Exit")
+        print("12. Exit")
 
-
-        choice = input("\nChoose an option: ").strip()
+        choice = input("Choose an option: ").strip()
 
         if choice == "1":
             show_all_purchases()
@@ -450,7 +392,7 @@ def main_menu() -> None:
             print("Goodbye!")
             break
         else:
-            print("Invalid option. Please choose 1-12.")
+            print("Invalid option.")
 
 
 if __name__ == "__main__":
@@ -459,4 +401,4 @@ if __name__ == "__main__":
     if synchronize_data():
         main_menu()
     else:
-        print("Application stopped because the CSV file could not be validated.")
+        print("Application stopped because the CSV file has errors.")
